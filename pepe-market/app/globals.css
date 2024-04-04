@@ -18,3 +18,9 @@ body {
         @apply text-green-500;
     }
 }
+
+@layer components {
+    .primary-button {
+        @apply hover:bg-green-600 transition-colors w-full text-lg  bg-green-500 rounded-md text-center text-[#eee];
+    }
+}
