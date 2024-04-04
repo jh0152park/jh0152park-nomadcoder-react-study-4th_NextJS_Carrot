@@ -19,7 +19,7 @@ export default function Home() {
             <div className="flex flex-col items-center w-full gap-3">
                 <Link
                     href="/create-account"
-                    className=" hover:bg-green-600 transition-colors w-full text-lg font-semibold bg-green-500 py-2.5 rounded-md text-center text-[#eee]"
+                    className="primary-button py-2.5 font-semibold"
                 >
                     Create
                 </Link>
