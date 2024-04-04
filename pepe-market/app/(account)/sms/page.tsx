@@ -1,35 +1,33 @@
+import Image from "next/image";
 import FormInput from "@/components/form-input";
 import FormButton from "@/components/form-button";
-import SocialLogin from "@/components/social-login";
-import Image from "next/image";
 
-export default function Login() {
+export default function SMSLogin() {
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
             <div className="flex flex-col gap-2 *:font-semibold">
-                <h1 className="text-2xl ">Hello!</h1>
-                <h2 className="text-xl ">Log in with email and password!</h2>
+                <h1 className="text-2xl ">SMS Login</h1>
+                <h2 className="text-xl ">Verify your phone number</h2>
             </div>
             <form className="flex flex-col gap-3 ">
                 <FormInput
-                    type="email"
-                    placeholder="Email"
+                    type="number"
+                    placeholder="Phone Number"
                     required
                     errors={[]}
                 />
                 <FormInput
-                    type="password"
-                    placeholder="Password"
+                    type="number"
+                    placeholder="Verification Code"
                     required
                     errors={[]}
                 />
-                <FormButton name="Login" loading={false} />
+                <FormButton name="Verify" loading={false} />
             </form>
-            <SocialLogin />
             <div className="flex justify-center w-full">
                 <Image
-                    src="/images/login/pepe_gatsby.png"
-                    alt="pepe_gatsby"
+                    src="/images/sms/pepe_phone.png"
+                    alt="pepe_phone"
                     width={200}
                     height={200}
                 />
