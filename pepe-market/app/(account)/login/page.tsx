@@ -4,20 +4,29 @@ import SocialLogin from "@/components/social-login";
 import Image from "next/image";
 
 export default function Login() {
+    async function onSubmit(data: FormData) {
+        "use server";
+        console.log("run in the server");
+        console.log(data.get("email"));
+        console.log(data.get("password"));
+    }
+
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
             <div className="flex flex-col gap-2 *:font-semibold">
                 <h1 className="text-2xl ">Hello!</h1>
                 <h2 className="text-xl ">Log in with email and password!</h2>
             </div>
-            <form className="flex flex-col gap-3 ">
+            <form action={onSubmit} className="flex flex-col gap-3 ">
                 <FormInput
+                    name="email"
                     type="email"
                     placeholder="Email"
                     required
                     errors={[]}
                 />
                 <FormInput
+                    name="password"
                     type="password"
                     placeholder="Password"
                     required
