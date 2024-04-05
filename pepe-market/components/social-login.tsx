@@ -11,14 +11,14 @@ export default function SocialLogin() {
                     href="/github/start"
                     className="flex items-center justify-center h-10 gap-3 primary-button"
                 >
-                    <AiFillMessage className="size-6" />
+                    <FaGithub class=" size-6" />
                     <span>Continue with Github</span>
                 </Link>
                 <Link
                     href="/sms"
                     className="flex items-center justify-center h-10 gap-3 primary-button"
                 >
-                    <FaGithub class=" size-6" />
+                    <AiFillMessage className="size-6" />
                     <span>Continue with SMS</span>
                 </Link>
             </div>
