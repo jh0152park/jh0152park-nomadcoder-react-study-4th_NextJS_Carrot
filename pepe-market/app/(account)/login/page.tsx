@@ -8,7 +8,7 @@ import { useFormState } from "react-dom";
 import { onSubmit } from "./actions";
 
 export default function Login() {
-    const [state, action] = useFormState(onSubmit, null);
+    const [state, trigger] = useFormState(onSubmit, null);
 
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
@@ -16,22 +16,20 @@ export default function Login() {
                 <h1 className="text-2xl ">Hello!</h1>
                 <h2 className="text-xl ">Log in with email and password!</h2>
             </div>
-            <form action={action} className="flex flex-col gap-3 ">
+            <form action={trigger} className="flex flex-col gap-3 ">
                 <FormInput
                     name="email"
                     type="email"
                     placeholder="Email"
                     required
-                    errors={[]}
                 />
                 <FormInput
                     name="password"
                     type="password"
                     placeholder="Password"
                     required
-                    errors={state?.errors ?? []}
                 />
-                <FormButton name="Login" loading={false} />
+                <FormButton name="Login" />
             </form>
             <SocialLogin />
             <div className="flex justify-center w-full">

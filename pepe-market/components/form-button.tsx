@@ -4,10 +4,9 @@ import { useFormStatus } from "react-dom";
 
 interface IFromButton {
     name: string;
-    loading: boolean;
 }
 
-export default function FormButton({ name, loading }: IFromButton) {
+export default function FormButton({ name }: IFromButton) {
     const { pending } = useFormStatus();
 
     return (
