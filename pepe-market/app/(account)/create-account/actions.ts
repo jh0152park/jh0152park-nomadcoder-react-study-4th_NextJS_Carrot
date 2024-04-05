@@ -2,6 +2,10 @@
 
 import { z } from "zod";
 
+const passwordRegex = new RegExp(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*?[#?!@$%^&*-]).+$/
+);
+
 function validateUsername(username: string) {
     const restrictWords = ["master", "admin", "potato", "운영자"];
 
@@ -32,7 +36,13 @@ const formSchema = z
             .max(10, "username should be less than 10 characters")
             .refine(validateUsername, "included not allowed word"),
         email: z.string().email(),
-        password: z.string().min(10),
+        password: z
+            .string()
+            .min(10)
+            .regex(
+                passwordRegex,
+                "Password must have lowercase and uppercase and special character"
+            ),
         confirm_password: z.string().min(10),
     })
     .refine(validatePassword, {
