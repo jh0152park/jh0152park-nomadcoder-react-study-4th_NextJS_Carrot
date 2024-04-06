@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import FormInput from "@/components/form-input";
-import FormButton from "@/components/form-button";
+import Input from "@/components/input";
+import Button from "@/components/button";
 import SocialLogin from "@/components/social-login";
 import { useFormState } from "react-dom";
 import { onSubmit } from "./actions";
@@ -17,19 +17,14 @@ export default function Login() {
                 <h2 className="text-xl ">Log in with email and password!</h2>
             </div>
             <form action={trigger} className="flex flex-col gap-3 ">
-                <FormInput
-                    name="email"
-                    type="email"
-                    placeholder="Email"
-                    required
-                />
-                <FormInput
+                <Input name="email" type="email" placeholder="Email" required />
+                <Input
                     name="password"
                     type="password"
                     placeholder="Password"
                     required
                 />
-                <FormButton name="Login" />
+                <Button name="Login" />
             </form>
             <SocialLogin />
             <div className="flex justify-center w-full">

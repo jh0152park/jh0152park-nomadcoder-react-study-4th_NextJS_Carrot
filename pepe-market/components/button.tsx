@@ -2,11 +2,11 @@
 
 import { useFormStatus } from "react-dom";
 
-interface IFromButton {
+interface IButton {
     name: string;
 }
 
-export default function FormButton({ name }: IFromButton) {
+export default function Button({ name }: IButton) {
     const { pending } = useFormStatus();
 
     return (

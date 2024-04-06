@@ -1,6 +1,6 @@
 import Image from "next/image";
-import FormInput from "@/components/form-input";
-import FormButton from "@/components/form-button";
+import FormInput from "@/components/input";
+import FormButton from "@/components/button";
 
 export default function SMSLogin() {
     return (

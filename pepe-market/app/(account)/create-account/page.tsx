@@ -1,7 +1,7 @@
 "use client";
 
-import FormInput from "@/components/form-input";
-import FormButton from "@/components/form-button";
+import Input from "@/components/input";
+import Button from "@/components/button";
 import SocialLogin from "@/components/social-login";
 import Image from "next/image";
 import { useFormState } from "react-dom";
@@ -17,35 +17,39 @@ export default function CreateAccount() {
                 <h2 className="text-xl ">Fill in the form below to join!</h2>
             </div>
             <form action={trigger} className="flex flex-col gap-3 ">
-                <FormInput
+                <Input
                     type="text"
                     name="username"
                     placeholder="Username"
                     required
                     errors={state?.fieldErrors.username}
+                    minLength={3}
+                    maxLength={10}
                 />
-                <FormInput
+                <Input
                     type="email"
                     name="email"
                     placeholder="Email"
                     required
                     errors={state?.fieldErrors.email}
                 />
-                <FormInput
+                <Input
                     type="password"
                     name="password"
                     placeholder="Password"
                     required
+                    minLength={4}
                     errors={state?.fieldErrors.password}
                 />
-                <FormInput
+                <Input
                     type="password"
                     name="confirm_password"
                     placeholder="Confirm password"
                     required
+                    minLength={4}
                     errors={state?.fieldErrors.confirm_password}
                 />
-                <FormButton name="Create account" />
+                <Button name="Create account" />
             </form>
             <SocialLogin />
             <div className="flex justify-center w-full">
