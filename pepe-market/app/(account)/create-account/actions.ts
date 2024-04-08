@@ -1,10 +1,11 @@
 "use server";
 
+import {
+    PASSWORD_MIN_LENGTH,
+    PASSWORD_REGEX,
+    PASSWORD_REGEX_ERROR,
+} from "@/lib/projectCommon";
 import { z } from "zod";
-
-const passwordRegex = new RegExp(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*?[#?!@$%^&*-]).+$/
-);
 
 function validateUsername(username: string) {
     const restrictWords = ["master", "admin", "potato", "운영자"];
@@ -32,18 +33,13 @@ const formSchema = z
                 invalid_type_error: "username have to be a string",
                 required_error: "please enter a username",
             })
-            .min(3, "username should be longer than 3 characters")
-            .max(10, "username should be less than 10 characters")
             .refine(validateUsername, "included not allowed word"),
         email: z.string().email(),
         password: z
             .string()
-            .min(10)
-            .regex(
-                passwordRegex,
-                "Password must have lowercase and uppercase and special character"
-            ),
-        confirm_password: z.string().min(10),
+            .min(PASSWORD_MIN_LENGTH)
+            .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
+        confirm_password: z.string().min(PASSWORD_MIN_LENGTH),
     })
     .refine(validatePassword, {
         message: "Both password and confirm_password must be the same",
@@ -61,5 +57,7 @@ export async function createAccount(prevState: any, formData: FormData) {
     const result = formSchema.safeParse(data);
     if (!result.success) {
         return result.error.flatten();
+    } else {
+        console.log(result.data);
     }
 }

@@ -5,10 +5,11 @@ import Input from "@/components/input";
 import Button from "@/components/button";
 import SocialLogin from "@/components/social-login";
 import { useFormState } from "react-dom";
-import { onSubmit } from "./actions";
+import login from "./actions";
+import { PASSWORD_MIN_LENGTH } from "@/lib/projectCommon";
 
 export default function Login() {
-    const [state, trigger] = useFormState(onSubmit, null);
+    const [state, trigger] = useFormState(login, null);
 
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
@@ -17,12 +18,20 @@ export default function Login() {
                 <h2 className="text-xl ">Log in with email and password!</h2>
             </div>
             <form action={trigger} className="flex flex-col gap-3 ">
-                <Input name="email" type="email" placeholder="Email" required />
+                <Input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    required
+                    errors={state?.fieldErrors.email}
+                />
                 <Input
                     name="password"
                     type="password"
                     placeholder="Password"
                     required
+                    minLength={PASSWORD_MIN_LENGTH}
+                    errors={state?.fieldErrors.password}
                 />
                 <Button name="Login" />
             </form>

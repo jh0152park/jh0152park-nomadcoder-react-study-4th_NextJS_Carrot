@@ -1,28 +1,34 @@
+"use client";
+
 import Image from "next/image";
-import FormInput from "@/components/input";
-import FormButton from "@/components/button";
+import Input from "@/components/input";
+import Button from "@/components/button";
+import { useFormState } from "react-dom";
+import { SNSVerification } from "./actions";
 
 export default function SMSLogin() {
+    const [state, trigger] = useFormState(SNSVerification, null);
+
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
             <div className="flex flex-col gap-2 *:font-semibold">
                 <h1 className="text-2xl ">SMS Login</h1>
                 <h2 className="text-xl ">Verify your phone number</h2>
             </div>
-            <form className="flex flex-col gap-3 ">
-                <FormInput
+            <form action={trigger} className="flex flex-col gap-3 ">
+                <Input
                     type="number"
                     name="phone_number"
                     placeholder="Phone Number"
                     required
                 />
-                <FormInput
+                <Input
                     type="number"
-                    name="code"
+                    name="token"
                     placeholder="Verification Code"
                     required
                 />
-                <FormButton name="Verify" />
+                <Button name="Verify" />
             </form>
             <div className="flex justify-center w-full">
                 <Image
