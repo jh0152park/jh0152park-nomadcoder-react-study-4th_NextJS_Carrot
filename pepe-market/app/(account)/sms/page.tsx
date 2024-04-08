@@ -4,10 +4,10 @@ import Image from "next/image";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import { useFormState } from "react-dom";
-import { SNSVerification } from "./actions";
+import { SMSVerification } from "./actions";
 
 export default function SMSLogin() {
-    const [state, trigger] = useFormState(SNSVerification, null);
+    const [state, trigger] = useFormState(SMSVerification, null);
 
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
@@ -17,7 +17,7 @@ export default function SMSLogin() {
             </div>
             <form action={trigger} className="flex flex-col gap-3 ">
                 <Input
-                    type="number"
+                    type="text"
                     name="phone_number"
                     placeholder="Phone Number"
                     required
@@ -27,6 +27,8 @@ export default function SMSLogin() {
                     name="token"
                     placeholder="Verification Code"
                     required
+                    min={100000}
+                    max={999999}
                 />
                 <Button name="Verify" />
             </form>
