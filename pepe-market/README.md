@@ -37,3 +37,11 @@ Next steps:
          url = env("DATABASE_URL")
      }
     ```
+
+## How to explain to prisma related to db what we created?
+
+-   run `npx prisma migrate dev` like git commit, after the can see the files and forder related to migration
+    ```
+    ? Enter a name for the new migration: › [name what you want]
+    ```
+    ![alt text](image.png)
