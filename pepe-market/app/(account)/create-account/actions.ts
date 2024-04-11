@@ -1,8 +1,9 @@
 "use server";
 
+import PrismaDB from "@/lib/db";
 import {
-    PASSWORD_MIN_LENGTH,
     PASSWORD_REGEX,
+    PASSWORD_MIN_LENGTH,
     PASSWORD_REGEX_ERROR,
 } from "@/lib/projectCommon";
 import { z } from "zod";
@@ -26,15 +27,46 @@ function validatePassword({
     return password === confirm_password;
 }
 
+async function isUsernameExist(username: string) {
+    const user = await PrismaDB.user.findUnique({
+        where: {
+            username,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    return !Boolean(user);
+}
+
+async function isEmailExist(email: string) {
+    const user = PrismaDB.user.findUnique({
+        where: {
+            email,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    return !Boolean(user);
+}
+
 const formSchema = z
     .object({
         username: z
             .string({
-                invalid_type_error: "username have to be a string",
-                required_error: "please enter a username",
+                invalid_type_error: "Username have to be a string",
+                required_error: "Please enter a username",
             })
-            .refine(validateUsername, "included not allowed word"),
-        email: z.string().email(),
+            .trim()
+            .refine(validateUsername, "Included not allowed word")
+            .refine(isUsernameExist, "This username already exists"),
+        email: z
+            .string()
+            .email()
+            .refine(isEmailExist, "This email already exists"),
         password: z
             .string()
             .min(PASSWORD_MIN_LENGTH)
@@ -54,10 +86,14 @@ export async function createAccount(prevState: any, formData: FormData) {
         confirm_password: formData.get("confirm_password"),
     };
 
-    const result = formSchema.safeParse(data);
+    const result = await formSchema.safeParseAsync(data);
     if (!result.success) {
         return result.error.flatten();
     } else {
-        console.log(result.data);
+        // check if username already exists
+        // check if email already exists
+        // hash password
+        // save user to db
+        // log the user in and redirect user to /home
     }
 }
