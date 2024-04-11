@@ -45,7 +45,7 @@ export default function CreateAccount() {
                 <Input
                     type="password"
                     name="confirm_password"
-                    placeholder="Confirm password"
+                    placeholder="Confirm Password"
                     required
                     minLength={PASSWORD_MIN_LENGTH}
                     errors={state?.fieldErrors.confirm_password}
