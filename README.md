@@ -38,3 +38,5 @@ Next steps:
          url = env("DATABASE_URL")
      }
     ```
+5. create a new model field
+6. npx prisma migrate dev
