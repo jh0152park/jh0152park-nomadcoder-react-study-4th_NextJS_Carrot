@@ -22,10 +22,11 @@ Next steps:
 
 1. added `.env` into .gitignore file for prevent shown `password`, `id`, `url` `etc` when deploy
 2. fixed `DATABASE_URL` inside of `.env` file. most important thing is URL have to be ended with `.db` like below
+   because currently we gonna use local db. not a serverless db service
     ```
     DATABASE_URL="file:./database.db"
     ```
-3. we have to tell to prisma like `we don't use postgresql, we gonna use local db instead such as SQLite` like below
+4. we have to tell to prisma like `we don't use postgresql, we gonna use local db instead such as SQLite` like below
 
     ```
     generator client {
