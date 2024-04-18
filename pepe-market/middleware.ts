@@ -1,12 +1,34 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import getSession from "./lib/session";
 
+interface IPublicURL {
+    [key: string]: boolean;
+}
+
+const publicURLs: IPublicURL = {
+    "/": true,
+    "/sms": true,
+    "/login": true,
+    "/create-account": true,
+};
+
 export async function middleware(request: NextRequest) {
+    console.log("middleware!");
+
     const session = await getSession();
-    console.log(request.nextUrl.pathname);
-    // return Response.redirect(new URL("/", request.url));
+    const isPublicPath = publicURLs[request.nextUrl.pathname];
+
+    if (!session.id) {
+        if (!isPublicPath) {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
+    } else {
+        if (isPublicPath) {
+            return NextResponse.redirect(new URL("/products", request.url));
+        }
+    }
 }
 
 export const config = {
-    matcher: ["/profile"],
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
