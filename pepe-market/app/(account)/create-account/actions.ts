@@ -7,6 +7,7 @@ import {
     PASSWORD_REGEX_ERROR,
 } from "@/lib/projectCommon";
 import { z } from "zod";
+import bcrypt from "bcrypt";
 
 function validateUsername(username: string) {
     const restrictWords = ["master", "admin", "potato", "운영자"];
@@ -41,7 +42,7 @@ async function isUsernameExist(username: string) {
 }
 
 async function isEmailExist(email: string) {
-    const user = PrismaDB.user.findUnique({
+    const user = await PrismaDB.user.findUnique({
         where: {
             email,
         },
@@ -50,7 +51,7 @@ async function isEmailExist(email: string) {
         },
     });
 
-    return !Boolean(user);
+    return Boolean(user) === false;
 }
 
 const formSchema = z
@@ -95,5 +96,20 @@ export async function createAccount(prevState: any, formData: FormData) {
         // hash password
         // save user to db
         // log the user in and redirect user to /home
+
+        // 12 mean is how many times run hash algorithm
+        // in this case 12 times
+        const hashedPassword = await bcrypt.hash(result.data.password, 12);
+        const user = await PrismaDB.user.create({
+            data: {
+                username: result.data.username,
+                email: result.data.email,
+                password: hashedPassword,
+            },
+            select: {
+                // we just need only id for detect is user is correct or not
+                id: true,
+            },
+        });
     }
 }
