@@ -8,6 +8,8 @@ import {
 } from "@/lib/projectCommon";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
 
 function validateUsername(username: string) {
     const restrictWords = ["master", "admin", "potato", "운영자"];
@@ -111,5 +113,13 @@ export async function createAccount(prevState: any, formData: FormData) {
                 id: true,
             },
         });
+
+        const cookie = await getIronSession(cookies(), {
+            cookieName: "pepe-market",
+            password: process.env.COOKIE_PASSWORD!,
+        });
+        // @ts-ignore
+        cookie.id = user.id;
+        await cookie.save();
     }
 }
