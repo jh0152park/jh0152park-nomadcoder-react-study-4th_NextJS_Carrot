@@ -70,6 +70,7 @@ export default async function login(prevState: any, formData: FormData) {
         if (passwrodCompare) {
             const session = await getSession();
             session.id = user!.id;
+            await session.save();
             redirect("/profile");
         } else {
             // pretending like a zod for avoid type errors at page.tsx
