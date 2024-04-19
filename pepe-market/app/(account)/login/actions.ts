@@ -8,8 +8,8 @@ import {
 } from "@/lib/projectCommon";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import getSession from "@/lib/session";
 import { redirect } from "next/navigation";
+import UpdateSession from "@/lib/session/updateSession";
 
 const formSchema = z.object({
     email: z
@@ -68,9 +68,7 @@ export default async function login(prevState: any, formData: FormData) {
         );
 
         if (passwrodCompare) {
-            const session = await getSession();
-            session.id = user!.id;
-            await session.save();
+            await UpdateSession(user!.id);
             redirect("/profile");
         } else {
             // pretending like a zod for avoid type errors at page.tsx
