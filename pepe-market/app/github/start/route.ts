@@ -1,6 +1,8 @@
 // The name of `route.ts` is kinda reserved name,
 // So, we can handle specific HTTP methods(like a GET or POST) of URL with route.ts file
 
+import { redirect } from "next/navigation";
+
 export function GET() {
     const RequestURL = "https://github.com/login/oauth/authorize";
     const params = {
@@ -10,5 +12,5 @@ export function GET() {
     };
     const formattedParams = new URLSearchParams(params).toString();
     const URL = `${RequestURL}?${formattedParams}`;
-    return Response.redirect(URL);
+    return redirect(URL);
 }

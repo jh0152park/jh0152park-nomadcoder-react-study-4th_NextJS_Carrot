@@ -1,4 +1,6 @@
-import { notFound } from "next/navigation";
+import PrismaDB from "@/lib/db";
+import getSession from "@/lib/session";
+import { notFound, redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -15,7 +17,7 @@ export async function GET(request: NextRequest) {
     }).toString();
     accessTokenURL = `${accessTokenURL}?${accessTokenParams}`;
 
-    const accessTokenResponse = await (
+    const { error, access_token } = await (
         await fetch(accessTokenURL, {
             method: "POST",
             headers: {
@@ -24,11 +26,60 @@ export async function GET(request: NextRequest) {
         })
     ).json();
 
-    if ("error" in accessTokenResponse) {
+    if (error) {
         return new Response(null, {
             status: 400,
         });
     }
 
-    return Response.json({ accessTokenResponse });
+    const userProfileResponse = await fetch("https://api.github.com/user", {
+        headers: {
+            Authorization: `Bearer ${access_token}`,
+        },
+        cache: "no-cache",
+    });
+    const { login, id, avatar_url } = await userProfileResponse.json();
+    const user = await PrismaDB.user.findUnique({
+        where: {
+            github_id: id + "",
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    // not a create account, just visit again
+    if (user) {
+        const session = await getSession();
+        session.id = user.id;
+        await session.save();
+        return redirect("/profile");
+    }
+
+    const isExistUserName = Boolean(
+        await PrismaDB.user.findUnique({
+            where: {
+                username: login,
+            },
+            select: {
+                id: true,
+            },
+        })
+    );
+
+    const newUser = await PrismaDB.user.create({
+        data: {
+            github_id: id + "",
+            profile_photo: avatar_url,
+            username: isExistUserName ? `${login}-gh` : login,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    const session = await getSession();
+    session.id = newUser.id;
+    await session.save();
+    return redirect("/profile");
 }
