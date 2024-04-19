@@ -1,9 +1,11 @@
 "use server";
 
 import { z } from "zod";
-import crypto from "crypto";
-import validator from "validator";
 import { redirect } from "next/navigation";
+
+import crypto from "crypto";
+import twilio from "twilio";
+import validator from "validator";
 import PrismaDB from "@/lib/db";
 import UpdateSession from "@/lib/session/updateSession";
 
@@ -102,6 +104,16 @@ export async function SMSVerification(
                 },
             });
             // send the token to user by twilio
+            const twilioClient = twilio(
+                process.env.TWILIO_ACCOUNT_ID,
+                process.env.TWILIO_AUTH_TOKEN
+            );
+            await twilioClient.messages.create({
+                body: `Pepe market verification token is ${token}`,
+                from: process.env.TWILIO_PHONE_NUMBER!,
+                to: process.env.MY_PHONE_NUMBER!,
+            });
+
             return { token: true };
         }
     } else {
