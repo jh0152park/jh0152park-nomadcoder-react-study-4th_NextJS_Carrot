@@ -5,6 +5,11 @@ import crypto from "crypto";
 import validator from "validator";
 import { redirect } from "next/navigation";
 import PrismaDB from "@/lib/db";
+import UpdateSession from "@/lib/session/updateSession";
+
+interface IActionState {
+    token: boolean;
+}
 
 const phoneSchema = z
     .string()
@@ -13,10 +18,22 @@ const phoneSchema = z
         (phone) => validator.isMobilePhone(phone, "ko-KR"),
         "Wroung phone number format"
     );
-const tokenSchema = z.coerce.number().min(100000).max(999999);
+const tokenSchema = z.coerce
+    .number()
+    .min(100000)
+    .max(999999)
+    .refine(isTokenExist, "Token is invalid or expired");
 
-interface IActionState {
-    token: boolean;
+async function isTokenExist(token: number) {
+    const exist = await PrismaDB.sMSToken.findUnique({
+        where: {
+            token: token + "",
+        },
+        select: {
+            id: true,
+        },
+    });
+    return Boolean(exist);
 }
 
 async function createToken() {
@@ -89,14 +106,32 @@ export async function SMSVerification(
         }
     } else {
         // current user puted a token
-        const result = tokenSchema.safeParse(token);
+        const result = await tokenSchema.safeParseAsync(token);
         if (!result.success) {
             return {
                 token: true,
                 error: result.error.flatten(),
             };
+        } else {
+            // when the token putted by user is fine
+            const token = await PrismaDB.sMSToken.findUnique({
+                where: {
+                    token: result.data.toString(),
+                },
+                select: {
+                    id: true,
+                    userId: true,
+                },
+            });
+
+            await UpdateSession(token!.userId);
+            await PrismaDB.sMSToken.delete({
+                where: {
+                    id: token!.id,
+                },
+            });
+
+            redirect("/profile");
         }
-        // redirect user to somewhere
-        redirect("/");
     }
 }
