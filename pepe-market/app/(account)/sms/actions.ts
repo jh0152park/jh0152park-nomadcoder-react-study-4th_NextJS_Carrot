@@ -159,7 +159,6 @@ export async function SMSVerification(
                 select: {
                     id: true,
                     userId: true,
-                    phone: true,
                 },
             });
 
