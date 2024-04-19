@@ -40,7 +40,7 @@ model Product {
   price       Float
   description String
   photo       String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   updated_at  DateTime @updatedAt
   created_at  DateTime @default(now())
