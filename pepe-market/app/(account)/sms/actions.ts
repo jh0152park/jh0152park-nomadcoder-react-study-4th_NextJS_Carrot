@@ -1,8 +1,10 @@
 "use server";
 
 import { z } from "zod";
+import crypto from "crypto";
 import validator from "validator";
 import { redirect } from "next/navigation";
+import PrismaDB from "@/lib/db";
 
 const phoneSchema = z
     .string()
@@ -15,6 +17,24 @@ const tokenSchema = z.coerce.number().min(100000).max(999999);
 
 interface IActionState {
     token: boolean;
+}
+
+async function createToken() {
+    const token = crypto.randomInt(100000, 999999).toString();
+    const exist = await PrismaDB.sMSToken.findUnique({
+        where: {
+            token: token,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (exist) {
+        return createToken();
+    } else {
+        return token;
+    }
 }
 
 export async function SMSVerification(
@@ -35,8 +55,38 @@ export async function SMSVerification(
                 token: false,
                 error: result.error.flatten(),
             };
+        } else {
+            // delete previous token
+            await PrismaDB.sMSToken.deleteMany({
+                where: {
+                    user: {
+                        phone: result.data,
+                    },
+                },
+            });
+            // create a new token
+            const token = await createToken();
+            await PrismaDB.sMSToken.create({
+                data: {
+                    token: token,
+                    user: {
+                        connectOrCreate: {
+                            where: {
+                                phone: result.data,
+                            },
+                            create: {
+                                phone: result.data,
+                                username: crypto
+                                    .randomBytes(10)
+                                    .toString("hex"),
+                            },
+                        },
+                    },
+                },
+            });
+            // send the token to user by twilio
+            return { token: true };
         }
-        return { token: true };
     } else {
         // current user puted a token
         const result = tokenSchema.safeParse(token);
