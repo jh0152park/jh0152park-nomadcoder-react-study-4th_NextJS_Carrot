@@ -1,38 +1,47 @@
-import { FormatToTimeAgo, FormatToWon } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
+"use client";
 
-interface IProductList {
-    id: number;
-    title: string;
-    price: number;
-    photo: string;
-    created_at: Date;
+import { useState } from "react";
+import ProductSummary from "./product-summary";
+import { TInitiateProduct } from "@/app/(screens)/products/page";
+import { getMoreProducts } from "@/app/(screens)/products/action";
+
+interface IInitialProducts {
+    initialProducts: TInitiateProduct;
 }
 
-export default function ProductList({
-    id,
-    title,
-    price,
-    photo,
-    created_at,
-}: IProductList) {
+export default function ProductList({ initialProducts }: IInitialProducts) {
+    const [page, setPage] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLastPage, setIsLastPage] = useState(false);
+    const [products, setProducts] = useState(initialProducts);
+
+    async function oMoreClick() {
+        setIsLoading(true);
+
+        const newProducts = await getMoreProducts(page + 1);
+        if (newProducts.length !== 0) {
+            setPage((prev) => prev + 1);
+            setProducts((prev) => [...prev, ...newProducts]);
+            setIsLoading(false);
+        } else {
+            setIsLastPage(true);
+        }
+    }
+
     return (
-        <Link href={`/products/${id}`} className="flex gap-5">
-            <div>
-                <div className="relative overflow-hidden rounded-md size-28">
-                    <Image src={photo} alt={title} fill />
-                </div>
-            </div>
-            <div className="flex flex-col gap-1 *:text-[ghostwhite]">
-                <span className="text-lg">{title}</span>
-                <span className="text-sm text-neutral-500">
-                    {FormatToTimeAgo(created_at.toString())}
-                </span>
-                <span className="text-lg font-semibold">
-                    ₩ {FormatToWon(price)}
-                </span>
-            </div>
-        </Link>
+        <div className="flex flex-col gap-5 p-5">
+            {products.map((product) => (
+                <ProductSummary key={product.id} {...product} />
+            ))}
+            {!isLastPage && (
+                <button
+                    onClick={oMoreClick}
+                    disabled={isLoading}
+                    className="px-3 py-2 mx-auto text-sm font-semibold transition-all bg-green-500 rounded-md w-fit hover:opacity-90 active:scale-95 disabled:bg-gray-500"
+                >
+                    {isLoading ? "loading" : "more"}
+                </button>
+            )}
+        </div>
     );
 }
