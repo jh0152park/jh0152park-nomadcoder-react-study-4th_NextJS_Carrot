@@ -8,7 +8,7 @@ import {
 } from "@/lib/projectCommon";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import getSession from "@/lib/session";
+import UpdateSession from "@/lib/session/updateSession";
 
 function validateUsername(username: string) {
     const restrictWords = ["master", "admin", "potato", "운영자"];
@@ -124,9 +124,6 @@ export async function createAccount(prevState: any, formData: FormData) {
                 id: true,
             },
         });
-
-        const session = await getSession();
-        session.id = user.id;
-        await session.save();
+        await UpdateSession(user.id);
     }
 }

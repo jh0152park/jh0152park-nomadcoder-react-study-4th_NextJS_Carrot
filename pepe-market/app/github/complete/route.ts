@@ -1,30 +1,21 @@
 import PrismaDB from "@/lib/db";
-import getSession from "@/lib/session";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
+import UpdateSession from "@/lib/session/updateSession";
+import getAccessToken from "@/lib/auth/github/getAccessToken";
+import getGithubPropfile from "@/lib/auth/github/getGithubProfile";
+import getGithubEmail from "@/lib/auth/github/getGithubEmail";
+import isExistUsername from "@/lib/auth/isExistUsername";
 
 export async function GET(request: NextRequest) {
     const code = request.nextUrl.searchParams.get("code");
     if (!code) {
-        return notFound();
+        return new Response(null, {
+            status: 400,
+        });
     }
 
-    let accessTokenURL = "https://github.com/login/oauth/access_token";
-    const accessTokenParams = new URLSearchParams({
-        client_id: process.env.GITHUB_CLIENT_ID!,
-        client_secret: process.env.GITHUB_CLIENT_SECRET_KEY!,
-        code: code,
-    }).toString();
-    accessTokenURL = `${accessTokenURL}?${accessTokenParams}`;
-
-    const { error, access_token } = await (
-        await fetch(accessTokenURL, {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-            },
-        })
-    ).json();
+    const { error, access_token } = await getAccessToken(code);
 
     if (error) {
         return new Response(null, {
@@ -32,13 +23,11 @@ export async function GET(request: NextRequest) {
         });
     }
 
-    const userProfileResponse = await fetch("https://api.github.com/user", {
-        headers: {
-            Authorization: `Bearer ${access_token}`,
-        },
-        cache: "no-cache",
-    });
-    const { login, id, avatar_url } = await userProfileResponse.json();
+    // github meail dont need so far, just for code challenge
+    const email = await getGithubEmail(access_token);
+    // using github name instead github id, because literally id isnt username
+    const { id, name, profile_photo } = await getGithubPropfile(access_token);
+
     const user = await PrismaDB.user.findUnique({
         where: {
             github_id: id + "",
@@ -50,36 +39,22 @@ export async function GET(request: NextRequest) {
 
     // not a create account, just visit again
     if (user) {
-        const session = await getSession();
-        session.id = user.id;
-        await session.save();
+        await UpdateSession(user.id);
         return redirect("/profile");
     }
 
-    const isExistUserName = Boolean(
-        await PrismaDB.user.findUnique({
-            where: {
-                username: login,
-            },
-            select: {
-                id: true,
-            },
-        })
-    );
-
+    const isExist = await isExistUsername(name);
     const newUser = await PrismaDB.user.create({
         data: {
             github_id: id + "",
-            profile_photo: avatar_url,
-            username: isExistUserName ? `${login}-gh` : login,
+            profile_photo: profile_photo,
+            username: isExist ? `${name}-gh` : name,
         },
         select: {
             id: true,
         },
     });
 
-    const session = await getSession();
-    session.id = newUser.id;
-    await session.save();
+    await UpdateSession(newUser.id);
     return redirect("/profile");
 }
