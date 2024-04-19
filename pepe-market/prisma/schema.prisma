@@ -28,6 +28,7 @@ model SMSToken {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   token      String   @unique
+  phone      String   @unique
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
 }

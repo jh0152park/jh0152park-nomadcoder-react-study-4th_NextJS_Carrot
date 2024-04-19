@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
         });
     }
 
-    // github meail dont need so far, just for code challenge
+    // github email dont need so far, just for code challenge
     const email = await getGithubEmail(access_token);
     // using github name instead github id, because literally id isnt username
     const { id, name, profile_photo } = await getGithubPropfile(access_token);

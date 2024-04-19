@@ -8,6 +8,7 @@ import { SMSVerification } from "./actions";
 
 const initialState = {
     token: false,
+    phone: "",
     error: undefined,
 };
 
@@ -21,14 +22,6 @@ export default function SMSLogin() {
                 <h2 className="text-xl ">Verify your phone number</h2>
             </div>
             <form action={trigger} className="flex flex-col gap-3 ">
-                <Input
-                    type="text"
-                    name="phone_number"
-                    placeholder="Phone Number"
-                    required
-                    errors={state.error?.formErrors}
-                    readOnly={state.token}
-                />
                 {state.token ? (
                     <Input
                         type="number"
@@ -37,8 +30,17 @@ export default function SMSLogin() {
                         required
                         min={100000}
                         max={999999}
+                        errors={state.error?.formErrors}
                     />
-                ) : null}
+                ) : (
+                    <Input
+                        type="text"
+                        name="phone_number"
+                        placeholder="Phone Number"
+                        required
+                        errors={state.error?.formErrors}
+                    />
+                )}
                 <Button
                     name={
                         state.token ? "Verify Token" : "Send verification SMS"
