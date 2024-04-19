@@ -10,14 +10,22 @@ interface IInitialProducts {
 }
 
 export default function ProductList({ initialProducts }: IInitialProducts) {
+    const [page, setPage] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLastPage, setIsLastPage] = useState(false);
     const [products, setProducts] = useState(initialProducts);
 
     async function oMoreClick() {
         setIsLoading(true);
-        const newProducts = await getMoreProducts(1);
-        setProducts((prev) => [...prev, ...newProducts]);
-        setIsLoading(false);
+
+        const newProducts = await getMoreProducts(page + 1);
+        if (newProducts.length !== 0) {
+            setPage((prev) => prev + 1);
+            setProducts((prev) => [...prev, ...newProducts]);
+            setIsLoading(false);
+        } else {
+            setIsLastPage(true);
+        }
     }
 
     return (
@@ -25,13 +33,15 @@ export default function ProductList({ initialProducts }: IInitialProducts) {
             {products.map((product) => (
                 <ProductSummary key={product.id} {...product} />
             ))}
-            <button
-                onClick={oMoreClick}
-                disabled={isLoading}
-                className="px-3 py-2 mx-auto text-sm font-semibold transition-all bg-green-500 rounded-md w-fit hover:opacity-90 active:scale-95 disabled:bg-gray-500"
-            >
-                {isLoading ? "loading" : "more"}
-            </button>
+            {!isLastPage && (
+                <button
+                    onClick={oMoreClick}
+                    disabled={isLoading}
+                    className="px-3 py-2 mx-auto text-sm font-semibold transition-all bg-green-500 rounded-md w-fit hover:opacity-90 active:scale-95 disabled:bg-gray-500"
+                >
+                    {isLoading ? "loading" : "more"}
+                </button>
+            )}
         </div>
     );
 }
