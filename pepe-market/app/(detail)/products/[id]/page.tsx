@@ -66,7 +66,7 @@ export default async function ProductDetail({
             <div className="flex items-center gap-3 p-5 border-b border-neutral-700">
                 <div className="overflow-hidden rounded-full size-10">
                     {product.user.profile_photo !== null ? (
-                        <img
+                        <Image
                             src={product.user.profile_photo}
                             alt={product.user.username}
                             width={40}
