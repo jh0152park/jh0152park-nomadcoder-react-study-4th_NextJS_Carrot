@@ -8,6 +8,7 @@ import { SMSVerification } from "./actions";
 
 const initialState = {
     token: false,
+    phone: "",
     error: undefined,
 };
 

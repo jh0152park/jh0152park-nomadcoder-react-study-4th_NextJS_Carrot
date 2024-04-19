@@ -11,20 +11,25 @@ import UpdateSession from "@/lib/session/updateSession";
 
 interface IActionState {
     token: boolean;
+    phone: string;
 }
+
+let PHONE_NUMBER = "";
 
 const phoneSchema = z
     .string()
     .trim()
     .refine(
         (phone) => validator.isMobilePhone(phone, "ko-KR"),
-        "Wroung phone number format"
+        "Wrong phone number format"
     );
+
 const tokenSchema = z.coerce
     .number()
     .min(100000)
     .max(999999)
-    .refine(isTokenExist, "Token is invalid or expired");
+    .refine(isTokenExist, "Token is invalid or expired")
+    .refine(isPhoneNumberValid, "The phone number and token dose not match");
 
 async function isTokenExist(token: number) {
     const exist = await PrismaDB.sMSToken.findUnique({
@@ -56,6 +61,19 @@ async function createToken() {
     }
 }
 
+async function isPhoneNumberValid(token: number) {
+    const _token = await PrismaDB.sMSToken.findUnique({
+        where: {
+            token: token + "",
+        },
+        select: {
+            phone: true,
+        },
+    });
+
+    return _token?.phone === PHONE_NUMBER;
+}
+
 export async function SMSVerification(
     prevState: IActionState,
     formData: FormData
@@ -72,6 +90,7 @@ export async function SMSVerification(
         if (!result.success) {
             return {
                 token: false,
+                phone: "",
                 error: result.error.flatten(),
             };
         } else {
@@ -83,11 +102,14 @@ export async function SMSVerification(
                     },
                 },
             });
+            PHONE_NUMBER = result.data;
+
             // create a new token
             const token = await createToken();
             await PrismaDB.sMSToken.create({
                 data: {
                     token: token,
+                    phone: result.data,
                     user: {
                         connectOrCreate: {
                             where: {
@@ -104,17 +126,20 @@ export async function SMSVerification(
                 },
             });
             // send the token to user by twilio
-            const twilioClient = twilio(
-                process.env.TWILIO_ACCOUNT_ID,
-                process.env.TWILIO_AUTH_TOKEN
-            );
-            await twilioClient.messages.create({
-                body: `Pepe market verification token is ${token}`,
-                from: process.env.TWILIO_PHONE_NUMBER!,
-                to: process.env.MY_PHONE_NUMBER!,
-            });
+            // const twilioClient = twilio(
+            //     process.env.TWILIO_ACCOUNT_ID,
+            //     process.env.TWILIO_AUTH_TOKEN
+            // );
+            // await twilioClient.messages.create({
+            //     body: `Pepe market verification token is ${token}`,
+            //     from: process.env.TWILIO_PHONE_NUMBER!,
+            //     to: process.env.MY_PHONE_NUMBER!,
+            // });
 
-            return { token: true };
+            return {
+                token: true,
+                phone: PHONE_NUMBER,
+            };
         }
     } else {
         // current user puted a token
@@ -122,6 +147,7 @@ export async function SMSVerification(
         if (!result.success) {
             return {
                 token: true,
+                phone: prevState.phone,
                 error: result.error.flatten(),
             };
         } else {
@@ -133,6 +159,7 @@ export async function SMSVerification(
                 select: {
                     id: true,
                     userId: true,
+                    phone: true,
                 },
             });
 
@@ -142,7 +169,6 @@ export async function SMSVerification(
                     id: token!.id,
                 },
             });
-
             redirect("/profile");
         }
     }
