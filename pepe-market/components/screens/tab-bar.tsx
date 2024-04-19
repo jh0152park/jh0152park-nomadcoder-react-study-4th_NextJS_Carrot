@@ -21,7 +21,7 @@ export default function TabBar() {
     const pathname = usePathname();
 
     return (
-        <div className="fixed bottom-0 grid w-full max-w-screen-sm grid-cols-5 px-5 py-3 mx-auto border-t border-neutral-600 *:text-white">
+        <div className="fixed bottom-0 grid w-full max-w-screen-sm grid-cols-5 px-5 py-3 mx-auto border-t border-neutral-600 *:text-white bg-[#121212]">
             <Link
                 href="/products"
                 className="flex flex-col items-center gap-px "
