@@ -39,4 +39,4 @@ Next steps:
      }
     ```
 5. create a new model field
-6. npx prisma migrate dev
+6. `npx prisma migrate dev` after added or fixed model field
