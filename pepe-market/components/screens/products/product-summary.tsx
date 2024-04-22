@@ -22,7 +22,7 @@ export default function ProductSummary({
             <div>
                 <div className="relative overflow-hidden rounded-md size-36">
                     <Image
-                        src={photo}
+                        src={`${photo}/profileImage`}
                         alt={title}
                         fill
                         className="object-cover"

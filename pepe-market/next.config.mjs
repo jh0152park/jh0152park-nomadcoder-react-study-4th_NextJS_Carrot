@@ -6,10 +6,11 @@ const nextConfig = {
                 hostname: "avatars.githubusercontent.com",
             },
             {
-                hostname: "avatars.githubusercontent.com",
+                hostname: "imagedelivery.net",
             },
         ],
     },
+    reactStrictMode: false,
 };
 
 export default nextConfig;
