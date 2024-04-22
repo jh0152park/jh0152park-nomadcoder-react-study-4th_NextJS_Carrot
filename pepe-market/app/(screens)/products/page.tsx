@@ -16,7 +16,7 @@ async function getInitialProducts() {
         orderBy: {
             created_at: "desc",
         },
-        take: 1,
+        // take: 1,
     });
 
     return products;

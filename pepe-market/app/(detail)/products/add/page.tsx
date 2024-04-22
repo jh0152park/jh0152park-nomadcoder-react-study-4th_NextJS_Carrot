@@ -9,8 +9,9 @@ import { useFormState } from "react-dom";
 
 export default function AddProduct() {
     const [preview, setPreview] = useState("");
+    const [imageId, setImageId] = useState();
     const [uploadURL, setUploadURL] = useState("");
-    const [state, trigger] = useFormState(uploadProduct, null);
+    const [state, trigger] = useFormState(converImageURLAction, null);
 
     async function onImageChange(event: React.ChangeEvent<HTMLInputElement>) {
         if (!event.target.files) return;
@@ -29,9 +30,34 @@ export default function AddProduct() {
         if (response.success) {
             const id = response.result.id;
             const uploadURL = response.result.uploadURL;
+            setImageId(id);
             setUploadURL(uploadURL);
         }
         console.log(response);
+    }
+
+    async function converImageURLAction(prevState: any, formData: FormData) {
+        const image = formData.get("photo");
+        if (!image) return;
+
+        // uplaod image to CF and replace photo to iamge url string
+        // then call uploadProduct function
+        const cloudFlareForm = new FormData();
+
+        cloudFlareForm.append("file", image);
+        const response = await fetch(uploadURL, {
+            method: "POST",
+            body: cloudFlareForm,
+        });
+
+        if (response.status !== 200) {
+            // something went wrong
+            return;
+        }
+
+        const photoURL = `https://imagedelivery.net/YgDzKoC5M4EUjo9dkUT0aQ/${imageId}`;
+        formData.set("photo", photoURL);
+        return uploadProduct(prevState, formData);
     }
 
     return (
