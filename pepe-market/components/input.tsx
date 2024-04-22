@@ -1,15 +1,18 @@
-import { InputHTMLAttributes } from "react";
+import { ForwardedRef, InputHTMLAttributes, forwardRef } from "react";
 
 interface IInputProps {
     name: string;
     errors?: string[];
 }
 
-export default function Input({
-    name,
-    errors = [],
-    ...extraProps
-}: IInputProps & InputHTMLAttributes<HTMLInputElement>) {
+function _Input(
+    {
+        name,
+        errors = [],
+        ...extraProps
+    }: IInputProps & InputHTMLAttributes<HTMLInputElement>,
+    ref: ForwardedRef<HTMLInputElement>
+) {
     return (
         <div className="flex flex-col gap-2">
             <input
@@ -17,6 +20,7 @@ export default function Input({
                 "
                 name={name}
                 {...extraProps}
+                ref={ref}
             />
             {errors.map((error, index) => (
                 <span key={index} className="font-medium text-red-500 ">
@@ -26,3 +30,5 @@ export default function Input({
         </div>
     );
 }
+
+export default forwardRef(_Input);

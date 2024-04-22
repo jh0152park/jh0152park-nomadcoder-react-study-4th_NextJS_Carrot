@@ -70,7 +70,7 @@ export default function AddProduct() {
         formData.append("photo", data.photo);
         formData.append("price", data.price + "");
         formData.append("description", data.description);
-        return uploadProduct(formData);
+        const errors = await uploadProduct(formData);
     });
 
     async function onValid() {
