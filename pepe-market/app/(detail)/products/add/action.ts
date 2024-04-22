@@ -60,3 +60,18 @@ export async function uploadProduct(prevState: any, formData: FormData) {
         }
     }
 }
+
+export async function getImageUploadURL2CF() {
+    const response = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ID}/images/v2/direct_upload`,
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${process.env.CF_TOKEN}`,
+            },
+        }
+    );
+
+    const data = await response.json();
+    return data;
+}
