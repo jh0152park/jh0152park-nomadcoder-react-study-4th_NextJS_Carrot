@@ -17,37 +17,36 @@ export default function ProductList({ initialProducts }: IInitialProducts) {
 
     const target = useRef<HTMLSpanElement>(null);
 
-    useEffect(() => {
-        let observer: IntersectionObserver;
-        if (target) {
-            observer = new IntersectionObserver(
-                async (entries) => {
-                    if (entries[0].isIntersecting) {
-                        // detected target
-                        observer.unobserve(target.current!);
-                        setIsLoading(true);
+    // useEffect(() => {
+    //     let observer: IntersectionObserver;
+    //     if (target) {
+    //         observer = new IntersectionObserver(
+    //             async (entries) => {
+    //                 if (entries[0].isIntersecting) {
+    //                     // detected target
+    //                     observer.unobserve(target.current!);
+    //                     setIsLoading(true);
+    //                     const newProducts = await getMoreProducts(page + 1);
+    //                     if (newProducts.length !== 0) {
+    //                         setPage((prev) => prev + 1);
+    //                         setProducts((prev) => [...prev, ...newProducts]);
+    //                         setIsLoading(false);
+    //                     } else {
+    //                         setIsLastPage(true);
+    //                     }
+    //                 }
+    //             },
+    //             {
+    //                 threshold: 1.0,
+    //             }
+    //         );
+    //         observer.observe(target.current as Element);
+    //     }
 
-                        const newProducts = await getMoreProducts(page + 1);
-                        if (newProducts.length !== 0) {
-                            setPage((prev) => prev + 1);
-                            setProducts((prev) => [...prev, ...newProducts]);
-                            setIsLoading(false);
-                        } else {
-                            setIsLastPage(true);
-                        }
-                    }
-                },
-                {
-                    threshold: 1.0,
-                }
-            );
-            observer.observe(target.current as Element);
-        }
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [page]);
+    //     return () => {
+    //         observer.disconnect();
+    //     };
+    // }, [page]);
 
     return (
         <div className="flex flex-col gap-5 p-5">
@@ -55,7 +54,7 @@ export default function ProductList({ initialProducts }: IInitialProducts) {
                 <ProductSummary key={product.id} {...product} />
             ))}
 
-            {!isLastPage && (
+            {/* {!isLastPage && (
                 <span
                     ref={target}
                     style={{
@@ -65,7 +64,7 @@ export default function ProductList({ initialProducts }: IInitialProducts) {
                 >
                     {isLoading ? "loading" : "more"}
                 </span>
-            )}
+            )} */}
         </div>
     );
 }

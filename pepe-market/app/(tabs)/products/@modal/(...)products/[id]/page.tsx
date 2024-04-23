@@ -1,3 +1,3 @@
 export default function Modal() {
-    return <h1>Hi Im modal!</h1>;
+    return <h1>Im Modal!</h1>;
 }
