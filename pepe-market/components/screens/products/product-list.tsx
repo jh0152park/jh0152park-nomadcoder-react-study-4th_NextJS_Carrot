@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import ProductSummary from "./product-summary";
-import { TInitiateProduct } from "@/app/(screens)/products/page";
-import { getMoreProducts } from "@/app/(screens)/products/action";
+import { TInitiateProduct } from "@/app/(tabs)/products/page";
+import { getMoreProducts } from "@/app/(tabs)/products/action";
 
 interface IInitialProducts {
     initialProducts: TInitiateProduct;
