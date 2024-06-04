@@ -2,11 +2,33 @@ import PrismaDB from "@/lib/db";
 import getSession from "@/lib/session/getSession";
 import { FormatToWon } from "@/lib/utils";
 import { UserIcon } from "@heroicons/react/24/solid";
+import { revalidateTag, unstable_cache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+const getCachedProduct = unstable_cache(getProduct, ["product-detail"], {
+    tags: ["product-detail", "detail", "post-malone"],
+});
+
+const getCachedProductTitle = unstable_cache(
+    getProductTitle,
+    ["product-title"],
+    {
+        tags: ["product-title", "title", "post-malone"],
+    }
+);
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+    const product = await getCachedProductTitle(+params.id);
+
+    return {
+        title: `${product?.title}`,
+    };
+}
+
 async function getProduct(id: number) {
+    console.log("run getProduct function!");
     const product = await PrismaDB.product.findUnique({
         where: {
             id: id,
@@ -18,6 +40,19 @@ async function getProduct(id: number) {
                     profile_photo: true,
                 },
             },
+        },
+    });
+    return product;
+}
+
+async function getProductTitle(id: number) {
+    console.log("run getProductTitle function!");
+    const product = await PrismaDB.product.findUnique({
+        where: {
+            id: id,
+        },
+        select: {
+            title: true,
         },
     });
     return product;
@@ -41,7 +76,7 @@ export default async function ProductDetail({
         return notFound();
     }
 
-    const product = await getProduct(id);
+    const product = await getCachedProduct(id);
     if (!product) {
         return notFound();
     }
@@ -56,6 +91,11 @@ export default async function ProductDetail({
             },
         });
         redirect("/products");
+    }
+
+    async function Revalidate() {
+        "use server";
+        revalidateTag("post-malone");
     }
 
     return (
@@ -89,6 +129,11 @@ export default async function ProductDetail({
                 <h1 className="text-2xl font-semibold">{product.title}</h1>
                 <p>{product.description}</p>
             </div>
+
+            <form action={Revalidate}>
+                <button>Revalidate</button>
+            </form>
+
             <div className="fixed bottom-0 left-0 flex items-center justify-between w-full p-5 pb-10 bg-neutral-800">
                 <span className="text-lg font-semibold">
                     ₩ {FormatToWon(product.price)}
