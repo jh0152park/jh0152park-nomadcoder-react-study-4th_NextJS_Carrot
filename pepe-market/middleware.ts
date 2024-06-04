@@ -15,7 +15,7 @@ const publicURLs: IPublicURL = {
 };
 
 export async function middleware(request: NextRequest) {
-    console.log("middleware!");
+    // console.log("middleware!");
 
     const session = await getSession();
     const isPublicPath = publicURLs[request.nextUrl.pathname];
