@@ -59,10 +59,10 @@ async function getProductTitle(id: number) {
 }
 
 async function checkIsOwner(userId: number) {
-    const session = await getSession();
-    if (session.id) {
-        return session.id === userId;
-    }
+    // const session = await getSession();
+    // if (session.id) {
+    //     return session.id === userId;
+    // }
     return false;
 }
 
@@ -158,4 +158,16 @@ export default async function ProductDetail({
             </div>
         </div>
     );
+}
+
+export async function generateStaticParams() {
+    const products = await PrismaDB.product.findMany({
+        select: {
+            id: true,
+        },
+    });
+
+    return products.map((product) => ({
+        id: product.id + "",
+    }));
 }
