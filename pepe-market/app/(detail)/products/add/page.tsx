@@ -91,7 +91,7 @@ export default function AddProduct() {
                         <>
                             <PhotoIcon className="w-20 " />
                             <div className="text-sm text-neutral-400">
-                                Add product's photo
+                                Add product photo
                             </div>
                         </>
                     )}
