@@ -7,6 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+export const dynamicParams = true;
+
 const getCachedProduct = unstable_cache(getProduct, ["product-detail"], {
     tags: ["product-detail", "detail", "post-malone"],
 });
@@ -167,7 +169,9 @@ export async function generateStaticParams() {
         },
     });
 
-    return products.map((product) => ({
-        id: product.id + "",
-    }));
+    // return products.map((product) => ({
+    //     id: product.id + "",
+    // }));
+
+    return [];
 }
